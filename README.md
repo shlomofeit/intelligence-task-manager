@@ -4,12 +4,16 @@ Agent and task management system for the ShadowNet unit.
 The system is stored in mysql and operated by OOP classes for data management and communication with the DB.
 
 ## Project structure
+> _# TODO: להרחיב על הutils_
+
 
     intelligence-task-manager/
     ├── database/
     │   ├── db_connection.py
     │   ├── agent_db.py
     │   └── mission_db.py
+    ├── utils/
+    │   ├── mission_utils.py
     ├── README.md
     ├── requirements.txt
     └── .gitignore

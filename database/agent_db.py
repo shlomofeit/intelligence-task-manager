@@ -1,74 +1,196 @@
-from db_connection import DBConnection
-from pydantic import BaseModel
-from enum import Enum
-
-
-class AgentRunkValidation(str, Enum):
-    pass
-
-class AgentValidate(BaseModel):
-    name: str
-    specialty: str
-    is_active: bool
-    completed_missions: int
-    failed_missions: int
-    agent_rank: AgentRunkValidation
+from database.db_connection import DBConnection
 
 
 class AgentDB:
     DBConnection().connect()
 
-    @classmethod
-    def create_agent(data: AgentValidate):
-        pass
+    @staticmethod
+    def create_agent(data: dict):
 
-
-    @classmethod
-    def get_all_agents(cls):
-        conn = DBConnection.get_connection()
         try:
+            conn = DBConnection().get_connection()
+
+            query = f"INSERT INTO agents (name, specialty, agent_runk) VALUES (%s, %s, %s)"
+            values = [data["name"], data["specialty"], data["agent_runk"]]
+            
+            cursor = conn.cursor()
+            cursor.execute(query, values)
+            conn.commit()
+
+            new_id = cursor.lastrowid
+
+            return AgentDB().get_agent_by_id(new_id)
+        
+        except Exception as e:
+            return {"message": f"error while creating a new agent: {e}"}
+        
+        finally:
+            cursor.close()
+            
+
+
+    @staticmethod
+    def get_all_agents():
+        try:
+            conn = DBConnection.get_connection()
             cursor = conn.cursor(dictionary=True)
             cursor.execute("SELECT * FROM agents")
+
             result = cursor.fetchall()
-            return result
+
+            return result if result else []
+        
         finally:
             cursor.close()
         
 
-    @classmethod
+    @staticmethod
     def get_agent_by_id(id):
-        pass
+        try:
+            conn = DBConnection.get_connection()
+
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("SELECT * FROM agents WHERE id = %s", [id])
+
+            result = cursor.fetchone()
+
+            return result if result else None
+        
+        finally:
+            cursor.close()
 
 
-    @classmethod
-    def update_agent(id, data: AgentValidate):
-        pass
+    @staticmethod
+    def update_agent(id, data: dict):
+        query_keys = ", ".join(f"{f} = %s" for f in data)
+        query_values = list(data.values()) + [id]
+        query = f"UPDATE agents SET {query_keys} WHERE id = %s"
+
+        try:
+            conn = DBConnection().get_connection()
+
+            cursor = conn.cursor()
+            cursor.execute(query, query_values)
+            conn.commit()
+
+            result = cursor.rowcount
+
+            if result > 0:
+                return "agent update completed successfully"
+        
+            return "agent not found"
+        
+        except Exception as e:
+            return {"message": f"error while updating the agent: {e}"}
+        
+        finally:
+            cursor.close()
 
 
-    @classmethod
+    @staticmethod
     def deactivate_agent(id):
-        pass
+        query = f"UPDATE agents SET is_active = FALSE WHERE id = %s"
+
+        try:
+            conn = DBConnection().get_connection()
+
+            cursor = conn.cursor()
+            cursor.execute(query, [id])
+            conn.commit()
+
+            if cursor.rowcount == 0:
+                return "agent not found"
+            
+            return "the inactive agent update was successful"
+        
+        except Exception as e:
+            return f"error while updating the agent: {e}"
+        
+        finally:
+            cursor.close()
 
 
-    @classmethod
+    @staticmethod
     def increment_completed(id):
-        pass
+        query = f"UPDATE agents SET completed_missions = completed_missions + 1 WHERE id = %s"
+
+        try:
+            conn = DBConnection().get_connection()
+
+            cursor = conn.cursor()
+            cursor.execute(query, [id])
+            conn.commit()
+
+            if cursor.rowcount == 0:
+                return "agent not found"
+            
+            return "success"
+        
+        except Exception as e:
+            return f"error while updating the agent: {e}"
+        
+        finally:
+            cursor.close()
 
 
-    @classmethod
+    @staticmethod
     def increment_failed(id):
-        pass
+        query = f"UPDATE agents SET failed_missions = failed_missions + 1 WHERE id = %s"
+
+        try:
+            conn = DBConnection().get_connection()
+
+            cursor = conn.cursor()
+            cursor.execute(query, [id])
+            conn.commit()
+
+            if cursor.rowcount == 0:
+                return "agent not found"
+            
+            return "success"
+        
+        except Exception as e:
+            return f"error while updating the agent: {e}"
+        
+        finally:
+            cursor.close()
 
 
-    @classmethod
+    @staticmethod
     def get_agent_performance(id):
-        pass
+        agent = AgentDB.get_agent_by_id(id)
+
+        if not agent:
+            return "agent not found"
+        
+        completed = agent["completed_missions"]
+        failed = agent["failed_missions"]
+        total = completed + failed
+        if failed * total == 0:
+            success_rate = 0
+        else:
+            success_rate = 100 / total * completed
+
+        return {
+            "completed": completed,
+            "failed": failed,
+            "total": total,
+            "success_rate": success_rate
+        }
 
 
-    @classmethod
+    @staticmethod
     def count_active_agents():
-        pass
+        try:
+            conn = DBConnection.get_connection()
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("SELECT COUNT(*) AS COUNT FROM agents WHERE is_active = TRUE")
+
+            result = cursor.fetchall()[0]["COUNT"]
+
+            return result
+        
+        finally:
+            cursor.close()
 
 
-
-print(AgentDB().get_all_agents())
