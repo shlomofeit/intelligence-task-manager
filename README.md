@@ -18,29 +18,29 @@ The system is stored in mysql and operated by OOP classes for data management an
 
 ### agents:
 
-| שדה | סוג | הערות |
+| field | type | comments |
 | --- | --- | --- |
-| id | INT, AUTO_INCREMENT, PK | מזהה ייחודי |
-| name | VARCHAR | שם הסוכן |
-| specialty | VARCHAR | תחום התמחות |
-| is_active | BOOLEAN | ברירת מחדל: TRUE |
-| completed_missions | INT | ברירת מחדל: 0 |
-| failed_missions | INT | ברירת מחדל: 0 |
-| agent_rank | ENUM / VARCHAR | Junior / Senior / Commander בלבד |
+| id | INT, AUTO_INCREMENT, PK | unique identifier |
+| name | VARCHAR | Agent Name |
+| specialty | VARCHAR | Field of specialization |
+| is_active | BOOLEAN | Default: TRUE |
+| completed_missions | INT | Default: 0 |
+| failed_missions | INT | Default: 0 |
+| agent_rank | ENUM / VARCHAR | Junior / Senior / Commander only |
 ##
 ### missions:
 
-| שדה | סוג | הערות |
+| field | type | comments |
 | --- | --- | --- |
-| id | INT, AUTO_INCREMENT, PK | מזהה ייחודי |
-| title | VARCHAR | כותרת המשימה |
-| description | TEXT | תיאור מפורט |
-| location | VARCHAR | מיקום |
-| difficulty | INT | 1–10 בלבד |
-| importance | INT | 1–10 בלבד |
-| status | VARCHAR | ברירת מחדל: NEW |
-| risk_level | VARCHAR | מחושב אוטומטית — לא מגיע מהמשתמש |
-| assigned_agent_id | INT | NULL עד שיוך |
+| id | INT, AUTO_INCREMENT, PK | Unique identifier |
+| title | VARCHAR | Task title |
+| description | TEXT | Detailed description |
+| location | VARCHAR | Location |
+| difficulty | INT | 1–10 only |
+| importance | INT | 1–10 only |
+| status | VARCHAR | Default: NEW |
+| risk_level | VARCHAR | Automatically calculated — not provided by the user |
+| assigned_agent_id | INT | NULL until assigned |
 ##
 
 ## Classes
