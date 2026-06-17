@@ -52,9 +52,9 @@ class DBConnection:
         title VARCHAR(100) NOT NULL,
         description TEXT NOT NULL,
         location VARCHAR(100) NOT NULL,
-        difficulty INT NOT NULL,
-        importance INT NOT NULL,
-        status ENUM('NEW', 'ASSIGNED', 'IN_PROGRESS', 'COMPLETED', 'FAILED', 'CANCELLED'),
+        difficulty INT NOT NULL CHECK (difficulty BETWEEN 0 AND 10),
+        importance INT NOT NULL CHECK (importance BETWEEN 0 AND 10),
+        status ENUM('NEW', 'ASSIGNED', 'IN_PROGRESS', 'COMPLETED', 'FAILED', 'CANCELLED') DEFAULT NEW,
         risk_level ENUM('LOW', 'MEDIUM', 'HIGH', 'CRITICAL'),
         assigned_agent_id INT
         );
