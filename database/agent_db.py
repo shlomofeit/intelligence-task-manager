@@ -166,10 +166,7 @@ class AgentDB:
         completed = agent["completed_missions"]
         failed = agent["failed_missions"]
         total = completed + failed
-        if failed * total == 0:
-            success_rate = 0
-        else:
-            success_rate = 100 / total * completed
+        success_rate = (completed / total) * 100 if total > 0 else 0
 
         return {
             "completed": completed,
