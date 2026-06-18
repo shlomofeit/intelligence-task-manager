@@ -26,6 +26,7 @@ class DBConnection:
     @classmethod
     def get_connection(cls):
         if cls.conn and cls.conn.is_connected():
+            cls.create_tabels()
             return cls.conn
         
         cls.connect()
@@ -49,7 +50,7 @@ class DBConnection:
         );
                        """)
         cursor.execute("""
-        CREATE TABLE missions(
+        CREATE TABLE IF NOT EXISTS missions(
         id INT AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(100) NOT NULL,
         description TEXT NOT NULL,

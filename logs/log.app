@@ -30,3 +30,5 @@
 2026-06-18 11:57:46,397 | INFO | GET http://127.0.0.1:8000/agents called
 2026-06-18 11:59:59,581 | INFO | GET http://127.0.0.1:8000/agents called
 2026-06-18 12:39:51,700 | INFO | GET http://127.0.0.1:8000/agents called
+2026-06-18 12:44:56,150 | INFO | GET http://127.0.0.1:8000/agents called
+2026-06-18 12:45:00,743 | INFO | POST http://127.0.0.1:8000/agents called
