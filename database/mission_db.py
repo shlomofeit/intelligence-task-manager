@@ -219,7 +219,7 @@ class MissionDB:
 
     @staticmethod
     def get_top_agent():
-        query = f"SELECT * FROM missions WHERE status = (SELECT MAX(COMPLETED) FROM missions)"
+        query = f"SELECT * FROM agents WHERE completed_missions = (SELECT MAX(completed_missions) FROM agents)"
 
         try:
             conn = DBConnection().get_connection()
