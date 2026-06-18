@@ -1,14 +1,15 @@
 from database.agent_db import AgentDB
 from database.mission_db import MissionDB
+from routes.agent_routes import RankValidation
 
 
 data = {
     "name": "Shlomo",
     "specialty": "Anything",
-    "agent_runk": "Junior",
-    "is_active": "TRUE",
-    "completed_missions": 3,
-    "failed_missions": 3
+    "agent_runk": "Junior"
+    # "is_active": "TRUE",
+    # "completed_missions": 3,
+    # "failed_missions": 3
 }
 
 data2 = {
@@ -24,6 +25,8 @@ data2 = {
 # x = AgentDB.get_agent_performance(2)
 # x = MissionDB.get_open_missions_by_agent(4)
 
+# x = RankValidation("Junior")
+x = AgentDB.create_agent(data)
 print(x)
 
 

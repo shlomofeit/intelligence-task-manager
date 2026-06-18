@@ -3,6 +3,7 @@ from database.db_connection import DBConnection
 
 class AgentDB:
     DBConnection().connect()
+    conn = DBConnection().get_connection()
 
     @staticmethod
     def create_agent(data: dict):
@@ -10,7 +11,7 @@ class AgentDB:
         try:
             conn = DBConnection().get_connection()
 
-            query = f"INSERT INTO agents (name, specialty, agent_runk) VALUES (%s, %s, %s)"
+            query = f"INSERT INTO agents (name, specialty, agent_rank) VALUES (%s, %s, %s)"
             values = [data["name"], data["specialty"], data["agent_runk"]]
             
             cursor = conn.cursor()
@@ -21,8 +22,9 @@ class AgentDB:
 
             return AgentDB().get_agent_by_id(new_id)
         
-        except Exception as e:
-            return {"message": f"error while creating a new agent: {e}"}
+        # except Exception as e:
+        #     print(f"NNN: {e}")
+        #     return f"error while creating a new agent: {e}"
         
         finally:
             cursor.close()

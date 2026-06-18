@@ -65,28 +65,28 @@ class MissionDB:
 
     @staticmethod
     def assign_mission(m_id, a_id):
-        agent = AgentDB.get_agent_by_id(a_id)
-        if not agent:
-            raise ValueError("agent not found")
+        # agent = AgentDB.get_agent_by_id(a_id)
+        # if not agent:
+        #     raise ValueError("agent not found")
         
-        if not agent["is_active"]:
-            raise ValueError("It is not possible to attach a mission to an inactive agent.") # role 4
-        
-
-        mission = MissionDB.get_mission_by_id(m_id)
-        if not mission:
-            raise ValueError("mission not found")
-        
-        if mission["status"] != "NEW":
-            raise ValueError("Cannot assign a task that is not in NEW status") # role 7
+        # if not agent["is_active"]:
+        #     raise ValueError("It is not possible to attach a mission to an inactive agent.") # role 4
         
 
-        open_missions = MissionDB.get_open_missions_by_agent(a_id)
-        if open_missions > 2:
-            raise ValueError("you cannot have more than 3 tasks per agent") # role 5
+        # mission = MissionDB.get_mission_by_id(m_id)
+        # if not mission:
+        #     raise ValueError("mission not found")
         
-        if mission["risk_level"] == "CRITICAL" and agent["agent_runk"] != "Commander":
-            raise ValueError("Only an Commander agent can accept a CRITICAL mission") # role 6
+        # if mission["status"] != "NEW":
+        #     raise ValueError("Cannot assign a task that is not in NEW status") # role 7
+        
+
+        # open_missions = MissionDB.get_open_missions_by_agent(a_id)
+        # if open_missions > 2:
+        #     raise ValueError("you cannot have more than 3 tasks per agent") # role 5
+        
+        # if mission["risk_level"] == "CRITICAL" and agent["agent_runk"] != "Commander":
+        #     raise ValueError("Only an Commander agent can accept a CRITICAL mission") # role 6
 
 
         query_values = [a_id, m_id]
@@ -114,7 +114,8 @@ class MissionDB:
     def update_mission_status(id, status):
         mission = MissionDB.get_mission_by_id(id)
         if not mission:
-            raise ValueError("mission not found")
+            # raise ValueError("mission not found")
+            return "mission not found"
         
         old_status = mission["status"]
 

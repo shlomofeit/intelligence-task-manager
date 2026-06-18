@@ -45,8 +45,10 @@ class DBConnection:
         is_active BOOLEAN DEFAULT TRUE NOT NULL,
         completed_missions INT DEFAULT 0 NOT NULL,
         failed_missions INT DEFAULT 0 NOT NULL,
-        agent_runk ENUM('Junior', 'Senior', 'Commander') NOT NULL
+        agent_rank ENUM('Junior', 'Senior', 'Commander') NOT NULL
         );
+                       """)
+        cursor.execute("""
         CREATE TABLE missions(
         id INT AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(100) NOT NULL,
@@ -54,7 +56,7 @@ class DBConnection:
         location VARCHAR(100) NOT NULL,
         difficulty INT NOT NULL CHECK (difficulty BETWEEN 0 AND 10),
         importance INT NOT NULL CHECK (importance BETWEEN 0 AND 10),
-        status ENUM('NEW', 'ASSIGNED', 'IN_PROGRESS', 'COMPLETED', 'FAILED', 'CANCELLED') DEFAULT NEW,
+        status ENUM('NEW', 'ASSIGNED', 'IN_PROGRESS', 'COMPLETED', 'FAILED', 'CANCELLED') DEFAULT 'NEW',
         risk_level ENUM('LOW', 'MEDIUM', 'HIGH', 'CRITICAL'),
         assigned_agent_id INT
         );
