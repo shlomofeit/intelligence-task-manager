@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from database.mission_db import MissionDB
 from database.agent_db import AgentDB
@@ -21,7 +20,7 @@ class MissionValidation(BaseModel):
     location: str
     difficulty: int
     importance: int
-    status: StatusValidation
+    status: StatusValidation | None = None
 
 
 router = APIRouter()
@@ -30,6 +29,7 @@ router = APIRouter()
 @router.post("")
 def mission_creator(data: MissionValidation):
     mission = data.model_dump()
+    mission["status"] = "NEW"
 
     result = MissionDB.create_mission(mission)
 
@@ -46,11 +46,14 @@ def get_all_missions_list():
 def get_mission_by_id(id: int):
     result = MissionDB.get_mission_by_id(id)
 
+    if not result:
+        raise HTTPException(404, "mission not found")
+
     return result
 
 @router.put("/{id}/assign/{agent_id}")
-def assign_mission_to_agent(a_id: int, m_id: int):
-    agent = AgentDB.get_agent_by_id(a_id)
+def assign_mission_to_agent(id: int, agent_id: int):
+    agent = AgentDB.get_agent_by_id(agent_id)
     if not agent:
         raise HTTPException(404, "agent not found")
     
@@ -58,7 +61,7 @@ def assign_mission_to_agent(a_id: int, m_id: int):
         raise HTTPException(400, "It is not possible to attach a mission to an inactive agent.") # role 4
     
 
-    mission = MissionDB.get_mission_by_id(m_id)
+    mission = MissionDB.get_mission_by_id(id)
     if not mission:
         raise HTTPException(404, "mission not found")
     
@@ -66,65 +69,59 @@ def assign_mission_to_agent(a_id: int, m_id: int):
         raise HTTPException(400, "Cannot assign a task that is not in NEW status") # role 7
     
 
-    open_missions = MissionDB.get_open_missions_by_agent(a_id)
-    if open_missions > 2:
+    open_missions = MissionDB.get_open_missions_by_agent(agent_id)
+    if len(open_missions) > 2:
         raise HTTPException(400, "you cannot have more than 3 tasks per agent") # role 5
     
-    if mission["risk_level"] == "CRITICAL" and agent["agent_runk"] != "Commander":
+    if mission["risk_level"] == "CRITICAL" and agent["agent_rank"] != "Commander":
         raise HTTPException(400, "Only an Commander agent can accept a CRITICAL mission") # role 6
     
-    result = MissionDB.assign_mission(a_id, m_id)
+    result = MissionDB.assign_mission(id, agent_id)
 
     return result
 
 
 @router.put("/{id}/start", status_code=201)
 def start_misiion(id: int):
-    mission = MissionDB.get_mission_by_id(id)
-    if not mission:
-        raise HTTPException(404, "mission not found")
+    get_mission_by_id(id)
     
     try:
         MissionDB.update_mission_status(id, "IN_PROGRESS")
 
     except ValueError as e:
-        raise HTTPException(400, e)
+        raise HTTPException(400, str(e))
 
 
 @router.put("/{id}/complete")
 def complete_mission(id: int):
-    mission = MissionDB.get_mission_by_id(id)
-    if not mission:
-        raise HTTPException(404, "mission not found")
+    mission = get_mission_by_id(id)
     
     try:
         MissionDB.update_mission_status(id, "COMPLETED")
+        AgentDB.increment_completed(mission["assigned_agent_id"])
 
     except ValueError as e:
-        raise HTTPException(400, e)
+        raise HTTPException(400, str(e))
 
 
 @router.put("/{id}/fail")
 def fail_mission(id: int):
-    mission = MissionDB.get_mission_by_id(id)
-    if not mission:
-        raise HTTPException(404, "mission not found")
+    mission = get_mission_by_id(id)
     
     try:
-        MissionDB.update_mission_status(id, "FAILD")
+        MissionDB.update_mission_status(id, "FAILED")
+        AgentDB.increment_failed(mission["assigned_agent_id"])
 
     except ValueError as e:
-        raise HTTPException(400, e)
+        raise HTTPException(400, str(e))
 
 
 @router.put("/{id}/cancel")
 def cancel_mission(id: int):
-    mission = MissionDB.get_mission_by_id(id)
-    if not mission:
-        raise HTTPException(404, "mission not found")
+    get_mission_by_id(id)
     
     try:
         MissionDB.update_mission_status(id, "CANCELLED")
 
     except ValueError as e:
-        raise HTTPException(400, e)
+        raise HTTPException(400, str(e))
