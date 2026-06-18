@@ -12,6 +12,10 @@ The system is stored in mysql and operated by OOP classes for data management an
     │   ├── db_connection.py
     │   ├── agent_db.py
     │   └── mission_db.py
+    ├── routes/
+    │   ├── agent_routes.py
+    │   ├── mission_routes.py
+    │   └── report_routes.py
     ├── utils/
     │   ├── mission_utils.py
     ├── README.md
@@ -139,4 +143,8 @@ The class contains the following methods:
 docker run -d --name intelligence-mysql -e MYSQL_ROOT_PASSWORD=1234 \
   -e MYSQL_DATABASE=Intelligence_db -p 3306:3306 mysql:8.0
 
+```
+
+```
+uvicorn main:app --reload
 ```
