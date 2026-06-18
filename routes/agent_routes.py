@@ -3,13 +3,6 @@ from fastapi.responses import JSONResponse
 from database.agent_db import AgentDB
 from database.db_connection import DBConnection
 from pydantic import BaseModel
-from enum import Enum
-
-
-# class RankValidation(Enum):
-#     Junior = "Junior"
-#     Senior = "Senior"
-#     Commander = "Commander"
 
 
 class AgentValidation(BaseModel):
@@ -18,7 +11,6 @@ class AgentValidation(BaseModel):
     is_active: bool | None = None
     agent_rank: str | None = None
     
-
 
 class NewAgentValidation(BaseModel):
     name: str
@@ -32,7 +24,7 @@ router = APIRouter()
 @router.post("", status_code=201)
 def creat_new_agent(data: NewAgentValidation):
     agent = data.model_dump()
-    
+
     if agent["agent_rank"] not in ["Junior", "Senior", "Commander"]:
         raise HTTPException(400, "agent_rank is not valid")
     
@@ -76,7 +68,6 @@ def get_agent_performance(id: int):
     result = AgentDB.get_agent_performance(id)
 
     return result
-
 
 
 @router.put("/{id}")
