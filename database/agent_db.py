@@ -12,7 +12,7 @@ class AgentDB:
             conn = DBConnection().get_connection()
 
             query = f"INSERT INTO agents (name, specialty, agent_rank) VALUES (%s, %s, %s)"
-            values = [data["name"], data["specialty"], data["agent_runk"]]
+            values = [data["name"], data["specialty"], data["agent_rank"]]
             
             cursor = conn.cursor()
             cursor.execute(query, values)
@@ -21,10 +21,6 @@ class AgentDB:
             new_id = cursor.lastrowid
 
             return AgentDB().get_agent_by_id(new_id)
-        
-        # except Exception as e:
-        #     print(f"NNN: {e}")
-        #     return f"error while creating a new agent: {e}"
         
         finally:
             cursor.close()
@@ -80,7 +76,7 @@ class AgentDB:
             if result > 0:
                 return "agent update completed successfully"
         
-            return "agent not found"
+            return "success"
         
         except Exception as e:
             return {"message": f"error while updating the agent: {e}"}
@@ -101,7 +97,7 @@ class AgentDB:
             conn.commit()
 
             if cursor.rowcount == 0:
-                return "agent not found"
+                return None
             
             return "the inactive agent update was successful"
         
@@ -124,7 +120,7 @@ class AgentDB:
             conn.commit()
 
             if cursor.rowcount == 0:
-                return "agent not found"
+                return None
             
             return "success"
         

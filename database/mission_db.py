@@ -65,29 +65,6 @@ class MissionDB:
 
     @staticmethod
     def assign_mission(m_id, a_id):
-        # agent = AgentDB.get_agent_by_id(a_id)
-        # if not agent:
-        #     raise ValueError("agent not found")
-        
-        # if not agent["is_active"]:
-        #     raise ValueError("It is not possible to attach a mission to an inactive agent.") # role 4
-        
-
-        # mission = MissionDB.get_mission_by_id(m_id)
-        # if not mission:
-        #     raise ValueError("mission not found")
-        
-        # if mission["status"] != "NEW":
-        #     raise ValueError("Cannot assign a task that is not in NEW status") # role 7
-        
-
-        # open_missions = MissionDB.get_open_missions_by_agent(a_id)
-        # if open_missions > 2:
-        #     raise ValueError("you cannot have more than 3 tasks per agent") # role 5
-        
-        # if mission["risk_level"] == "CRITICAL" and agent["agent_runk"] != "Commander":
-        #     raise ValueError("Only an Commander agent can accept a CRITICAL mission") # role 6
-
 
         query_values = [a_id, m_id]
         query = f"UPDATE missions SET assigned_agent_id = %s WHERE id = %s"
@@ -113,16 +90,13 @@ class MissionDB:
     @staticmethod
     def update_mission_status(id, status):
         mission = MissionDB.get_mission_by_id(id)
-        if not mission:
-            # raise ValueError("mission not found")
-            return "mission not found"
         
         old_status = mission["status"]
 
         if status == "IN_PROGRESS" and old_status != "ASSIGNED":
             raise ValueError("Mission can start only with ASSIGNED status") # role 8
         
-        if status in ["FAILD", "COMPLETED"] and old_status != "IN_PROGRESS":
+        if status in ["FAILED", "COMPLETED"] and old_status != "IN_PROGRESS":
             raise ValueError("Only mission IN_PROGRESS can change the status to failed or completed") # role 9
         
         if status == "CANCELLED" and old_status not in ["NEW", "ASSIGNED"]:
